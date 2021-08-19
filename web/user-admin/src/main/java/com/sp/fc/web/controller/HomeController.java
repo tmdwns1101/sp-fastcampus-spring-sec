@@ -1,6 +1,7 @@
 package com.sp.fc.web.controller;
 
 
+import com.sp.fc.web.error.AccessDeniedUserPageException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -9,11 +10,14 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpSession;
+
 @Controller
 public class HomeController {
 
     @GetMapping("/")
-    public String main(){
+    public String main(Model model, HttpSession session){
+        model.addAttribute("sessionId", session.getId());
         return "index";
     }
 
@@ -33,9 +37,16 @@ public class HomeController {
         return "AccessDenied";
     }
 
+
+    @GetMapping("/access-denied2")
+    public String accessDenied2(){
+        return "AccessDenied2";
+    }
+
     @PreAuthorize("hasAnyAuthority('ROLE_USER')")
     @GetMapping("/user-page")
     public String userPage(){
+        if(true) throw new AccessDeniedUserPageException();
         return "UserPage";
     }
 
